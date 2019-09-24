@@ -1,7 +1,7 @@
 @echo off
 
-if not exist "%~dp0\Thirdparty\ACT\Advanced Combat Tracker.exe" (
-	echo Error: Please copy "Advanced Combat Tracker.exe" into "Thirdparty\ACT" directory.
+if not exist "%~dp0\vendor\ACT\Advanced Combat Tracker.exe" (
+	echo Error: Please copy "Advanced Combat Tracker.exe" into "vendor\ACT" directory.
 	goto END
 )
 
