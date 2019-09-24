@@ -1,4 +1,5 @@
 ﻿using Advanced_Combat_Tracker;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,9 +16,14 @@ namespace RainbowMage.OverlayPlugin
     public class PluginLoader : IActPluginV1
     {
         PluginMain pluginMain;
-        Logger logger;
+        ILogger logger;
         AssemblyResolver asmResolver;
         string pluginDirectory;
+
+        public PluginLoader(ILoggerFactory loggerFactory)
+        {
+            logger = loggerFactory.CreateLogger(nameof(PluginLoader));
+        }
 
         public void InitPlugin(TabPage pluginScreenSpace, Label pluginStatusText)
         {
@@ -36,7 +42,6 @@ namespace RainbowMage.OverlayPlugin
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Initialize(TabPage pluginScreenSpace, Label pluginStatusText)
         {
-            logger = new Logger();
             asmResolver.ExceptionOccured += (o, e) => logger.Log(LogLevel.Error, "AssemblyResolver: Error: {0}", e.Exception);
             asmResolver.AssemblyLoaded += (o, e) => logger.Log(LogLevel.Debug, "AssemblyResolver: Loaded: {0}", e.LoadedAssembly.FullName);
             pluginMain = new PluginMain(pluginDirectory, logger);

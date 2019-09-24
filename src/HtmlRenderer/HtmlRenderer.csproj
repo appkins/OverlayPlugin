@@ -1,7 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Chromely.CefGlue" Version="4.0.70.1" />
+  </ItemGroup>
 
 </Project>

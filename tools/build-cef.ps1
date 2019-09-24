@@ -4,8 +4,7 @@
 # !! Build requires VERY long time and VERY large amount of disk space (>70GB) !!
 #
 
-if ($currentDir.Contains(" "))
-{
+if ($currentDir.Contains(" ")) {
 	throw "Script directory must not contains a space character."
 }
 
@@ -27,8 +26,7 @@ $depotToolsDir = Join-Path $rootDir "depot_tools"
 $chromiumDir = Join-Path $rootDir "chromium"
 $env:Path += ";$depotToolsDir"
 
-function Main
-{
+function Main {
 	CreateDirectory
 	DeployDepotTools
 	DownloadSourceCode
@@ -38,22 +36,17 @@ function Main
 	PackBinary
 }
 
-function CreateDirectory
-{
+function CreateDirectory {
 	if (!(Test-Path $chromiumDir)) { mkdir $chromiumDir }
 }
 
 # Download, extract and update depot tools
-function DeployDepotTools
-{
-	if (!(Test-Path $depotToolsDir))
-	{
-		function Expand-Zip($file, $destination)
-		{
+function DeployDepotTools {
+	if (!(Test-Path $depotToolsDir)) {
+		function Expand-Zip($file, $destination) {
 			$shell = new-object -com shell.application
 			$zip = $shell.NameSpace($file)
-			foreach ($item in $zip.items())
-			{
+			foreach ($item in $zip.items()) {
 				$shell.Namespace($destination).copyhere($item)
 			}
 		}
@@ -66,8 +59,7 @@ function DeployDepotTools
 	}
 }
 
-function DownloadSourceCode
-{
+function DownloadSourceCode {
 	# Download Chromium and CEF
 	cd $chromiumDir
 	fetch --nohooks chromium --nosvn=True
@@ -80,10 +72,8 @@ function DownloadSourceCode
 }
 
 # Apply patch for Japanese environment
-function ApplyFixForJapaneseEnvironment
-{
-	if ((Get-WinSystemLocale).Name -eq "ja-JP") 
-	{
+function ApplyFixForJapaneseEnvironment {
+	if ((Get-WinSystemLocale).Name -eq "ja-JP") {
 		$sitecustomize = Join-Path "$currentDir" "sitecustomize-jp.py";
 		copy "$sitecustomize" "$depotToolsDir\python276_bin\Lib\site-packages\sitecustomize.py"
 		
@@ -94,9 +84,8 @@ function ApplyFixForJapaneseEnvironment
 }
 
 # Build 32-bit version
-function Build32Bit
-{
-	$env:GYP_DEFINES="target_arch=ia32"
+function Build32Bit {
+	$env:GYP_DEFINES = "target_arch=ia32"
 	
 	cd $chromiumDir\src\cef
 	./cef_create_projects.bat
@@ -107,13 +96,11 @@ function Build32Bit
 }
 
 # Build 64-bit version
-function Build64Bit
-{
-	$env:GYP_DEFINES="target_arch=x64"
+function Build64Bit {
+	$env:GYP_DEFINES = "target_arch=x64"
 	
 	# Patch if Chromium version == 45.0.2454.85
-	if ($chromiumRevision -eq "4c2743615eaa2806ad014c59bf6acbb652cf3aa8")
-	{
+	if ($chromiumRevision -eq "4c2743615eaa2806ad014c59bf6acbb652cf3aa8") {
 		cd $chromiumDir\src
 		git checkout 1d078f6c8a00ed3c571002238de6d1424fa7548f -- media/cdm/stub/stub_cdm.cc
 	}
@@ -127,8 +114,7 @@ function Build64Bit
 }
 
 # Packaging
-function PackBinary
-{
+function PackBinary {
 	cd $chromiumDir\src\cef\tools
 	./make_distrib.bat --ninja-build
 	./make_distrib.bat --ninja-build --x64-build
